@@ -7,12 +7,9 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
-    "@pixi/app": "^6.2.2",
-    "@pixi/core": "^6.2.2",
-    "@pixi/events": "^6.2.2",
-    "@pixi/graphics": "^6.2.2",
-    "core-js": "^3.6.5",
+    "core-js": "^3.21.1",
     "element-ui": "^2.15.6",
+    "pixi": "^0.3.1",
     "pixi.js": "^6.2.2",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",

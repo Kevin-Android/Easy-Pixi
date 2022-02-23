@@ -1,5 +1,10 @@
 <template>
-  <div class="pixi-stage" ref="PixiStage"></div>
+  <div
+    class="pixi-stage"
+    ref="PixiStage"
+    @mousemove="mouseMove"
+    @mousewheel="mouseWheel"
+  ></div>
 </template>
 
 <script>
@@ -10,6 +15,7 @@ export default {
   data() {
     return {
       target: 0,
+      scaleBy: 1.1,
     };
   },
   mounted() {
@@ -30,6 +36,15 @@ export default {
     },
     setCursor(tag) {
       plugin.setCursor(tag);
+    },
+    mouseMove(event) {
+      plugin.setPointer({
+        x: event.offsetX,
+        y: event.offsetY,
+      });
+    },
+    mouseWheel(event) {
+      plugin.setOnMouseWheel(event);
     },
   },
 };
