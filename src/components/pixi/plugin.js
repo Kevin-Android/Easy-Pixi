@@ -16,6 +16,7 @@ const defaultOptions = {
 const scaleBy = 1.1;
 
 let app;
+let eventApp;
 let appLoader;
 let imageResources;
 let image;
@@ -34,14 +35,19 @@ let eventData;
 
 
 function init(dom, options = defaultOptions) {
-    app = new PixiApp(options)
-    dom.append(app.view)
+    app = new PixiApp(options);
+    options.backgroundAlpha = 0;
+    eventApp = new PixiApp(options);
+    dom.append(app.view);
+    dom.append(eventApp.view);
     app.resizeTo = dom;
+    eventApp.resizeTo = dom;
     stageBoundary.right = app.renderer.width;
     stageBoundary.bottom = app.renderer.height;
     window.onresize = () => {
         return (() => {
-            app.resize()
+            app.resize();
+            eventApp.resize();
             stageBoundary.right = app.renderer.width;
             stageBoundary.bottom = app.renderer.height;
         })()
@@ -49,12 +55,22 @@ function init(dom, options = defaultOptions) {
     appLoader = Loader.shared;
     // 设置请求资源的参数，防止缓存的出现
     appLoader.defaultQueryString = 'v=' + Math.random();
-    console.log("初始化成功", app)
-    //  启用交互性！
-    // app.stage.interactive = true;
-    // app.renderer.plugins.interaction.on("pointermove", onStageDragMove)
-    // app.renderer.view
-    // .on('pointermove', onStageDragMove)
+    app.view.style.position = "absolute";
+    app.view.style.top = "0";
+    app.view.style.right = "0";
+    app.view.style.bottom = "0";
+    app.view.style.left = "0";
+    app.view.style.cursor = "default";
+    app.view.style.userSelect = "none";
+    eventApp.view.style.position = "absolute";
+    eventApp.view.style.top = "0";
+    eventApp.view.style.right = "0";
+    eventApp.view.style.bottom = "0";
+    eventApp.view.style.left = "0";
+    eventApp.view.style.userSelect = "none";
+    console.log("初始化成功", app.view.style);
+    console.log("初始化成功", eventApp.view.style);
+
 
 }
 
@@ -159,6 +175,7 @@ function setImage(loaderResource) {
         .on('pointermove', onDragMove)
         .on('pointerup', onDragEnd)
         .on('pointerupoutside', onDragEnd)
+
 }
 //  更新鼠标坐标
 function setPointer(val) {
@@ -208,34 +225,27 @@ function setOnMouseWheel(event) {
     getImage().position.x = newPos.x;
     getImage().position.y = newPos.y;
 
-    lable.forEach((val, index) => {
+    lable.forEach((val, index, arr) => {
         switch (coordinate[index].type) {
             case "point":
                 // console.log("点", direction > 0 ? "放大" : "缩小", "改变坐标", val.x, val.y, val, coordinate[index]);
-                console.log("缩放计算", coordinate[index].offset.x * newScale + newPos.x)
-                //  获取鼠标与图片上次缩放比例的坐标差
-                var mousePointToa = {
-                    x: (pointer.x - val.position.x) / oldScale,
-                    y: (pointer.y - val.position.y) / oldScale,
-                };
-
-                var newPosa = {
-                    x: pointer.x - mousePointToa.x * newScale,
-                    y: pointer.y - mousePointToa.y * newScale,
-                };
-                val.position.x = coordinate[index].offset.x * newScale + newPos.x;
-                val.position.y = coordinate[index].offset.y * newScale + newPos.y;
-                val.width = coordinate[index].width * newScale;
-                val.height = coordinate[index].height * newScale;
-                console.log("缩放计算", val.position.x)
-                console.log("缩放计算", val.position.x)
+                val.position.x = (coordinate[index].offset.x * newScale + newPos.x);
+                val.position.y = (coordinate[index].offset.y * newScale + newPos.y);
+                //val.position.x = (coordinate[index].offset.x * newScale + newPos.x) + coordinate[index].width * newScale;
+                //val.position.y = (coordinate[index].offset.y * newScale + newPos.y) + coordinate[index].height * newScale;
+                // val.width = coordinate[index].width * newScale;
+                // val.height = coordinate[index].height * newScale;
+                console.log("图像缩放比例", newScale)
+                console.log("点的原始x坐标", coordinate[index].offset.x)
+                console.log("图像缩放后的x", newPos.x)
+                console.log("结果", (coordinate[index].offset.x * newScale + newPos.x))
+                console.log(getImage())
                 break
             case "rect":
-
                 val.position.x = coordinate[index].offset.x * newScale + newPos.x;
                 val.position.y = coordinate[index].offset.y * newScale + newPos.y;
-                val.width = coordinate[index].width * newScale;
-                val.height = coordinate[index].height * newScale;
+                // val.width = coordinate[index].width * newScale;
+                // val.height = coordinate[index].height * newScale;
                 break
             default:
                 break
@@ -253,7 +263,13 @@ function onDragStart(event) {
     eventData = event.data
     // 鼠标点击位置和图形位置的偏移量，用于移动计算
     eventDiff = { x: event.data.global.x - this.x, y: event.data.global.y - this.y }
+    var pointerPosition = event.data.getLocalPosition(app.stage);
+    console.log(pointerPosition);
+    lable.forEach((val, index) => {
+        console.log(coordinate[index])
+        console.log(val)
 
+    })
 }
 
 //拖拽移动中
@@ -290,12 +306,12 @@ function onDragEnd() {
     }
 }
 
-
+let point;
 
 function addPoint(x, y, radius) {
-    let point = new Graphics();
+    point = new Graphics();
     point.beginFill(0x66CCFF);
-    point.drawCircle(x, y, radius);
+    point.drawCircle(0, 0, radius);
     point.endFill();
     point.x = x;
     point.y = y;
@@ -319,15 +335,13 @@ function addRect() {
 function pushChild(type, child) {
     app.stage.addChild(child)
     lable.push(child)
+    console.log(child)
     switch (type) {
         case "point":
-            console.log(child)
             coordinate.push({
                 type: "point",
                 x: child.position.x,
                 y: child.position.y,
-                width: child.width,
-                height: child.height,
                 offset: {
                     x: child.position.x - image.position.x,
                     y: child.position.y - image.position.y

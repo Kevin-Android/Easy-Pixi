@@ -74,6 +74,7 @@ export default {
     };
   },
   mounted() {
+    console.log(this.$refs.pixiStage);
     this.fullscreenLoading = true;
     setTimeout(() => {
       plugin.addImageList(this.imageList, (val) => {
@@ -168,7 +169,7 @@ export default {
 .content-app {
   width: 100%;
   height: 100%;
-  border: 1px solid #a6b9c8;
+  border: 1px solid #ea1e63;
 }
 .right-top {
   width: 215px;
