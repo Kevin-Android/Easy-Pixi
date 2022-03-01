@@ -8,10 +8,101 @@
   >
     <div class="grid-left">
       <div class="left-div left-div-1">
-        <p class="left-addrect" @click="addPoint">坐标点</p>
-        <p class="left-addrect" @click="addRect">矩形框</p>
+        <div
+          class="left-bar-but"
+          v-bind:class="{ 'bar-but-on': eventCursor === 1 }"
+          @click="eventCursorClick(1)"
+        >
+          <img
+            class="left-bar-but-img"
+            src="@/assets/svg/cv-rect.svg"
+            alt=""
+            srcset=""
+          />
+        </div>
+        <div
+          class="left-bar-but"
+          v-bind:class="{ 'bar-but-on': eventCursor === 3 }"
+          @click="eventCursorClick(3)"
+        >
+          <img
+            class="left-bar-but-img"
+            src="@/assets/svg/cv-polygon.svg"
+            alt=""
+            srcset=""
+          />
+        </div>
       </div>
-      <div class="left-div left-div-2"></div>
+      <div class="left-div left-div-2">
+        <div class="left-bar-but">
+          <img
+            class="left-bar-but-img"
+            src="@/assets/svg/cv-line.svg"
+            alt=""
+            srcset=""
+          />
+        </div>
+        <div class="left-bar-but">
+          <img
+            class="left-bar-but-img"
+            src="@/assets/svg/cv-choose.svg"
+            alt=""
+            srcset=""
+          />
+        </div>
+        <div
+          class="left-bar-but"
+          v-bind:class="{ 'bar-but-on': eventCursor === 0 }"
+          @click="eventCursorClick(0)"
+        >
+          <img
+            class="left-bar-but-img"
+            src="@/assets/svg/cv-move.svg"
+            alt=""
+            srcset=""
+          />
+        </div>
+        <div class="left-bar-but">
+          <img
+            class="left-bar-but-img"
+            src="@/assets/svg/cv-zoom.svg"
+            alt=""
+            srcset=""
+          />
+        </div>
+        <div class="left-bar-but">
+          <img
+            class="left-bar-but-img"
+            src="@/assets/svg/cv-enlarge.svg"
+            alt=""
+            srcset=""
+          />
+        </div>
+        <div class="left-bar-but">
+          <img
+            class="left-bar-but-img"
+            src="@/assets/svg/cv-screen.svg"
+            alt=""
+            srcset=""
+          />
+        </div>
+        <div class="left-bar-but">
+          <img
+            class="left-bar-but-img"
+            src="@/assets/svg/cv-tag.svg"
+            alt=""
+            srcset=""
+          />
+        </div>
+        <div class="left-bar-but">
+          <img
+            class="left-bar-but-img"
+            src="@/assets/svg/cv-color.svg"
+            alt=""
+            srcset=""
+          />
+        </div>
+      </div>
     </div>
     <div class="grid-content">
       <div class="content-bar">
@@ -44,6 +135,7 @@ export default {
     return {
       fullscreenLoading: false,
       loadingText: "拼命加载中",
+      eventCursor: 0,
       imageIndex: 0,
       imageList: new Array(
         {
@@ -74,11 +166,9 @@ export default {
     };
   },
   mounted() {
-    console.log(this.$refs.pixiStage);
     this.fullscreenLoading = true;
     setTimeout(() => {
       plugin.addImageList(this.imageList, (val) => {
-        console.log(val);
         this.loadingText = val.msg;
         if (val.code === 5) {
           this.fullscreenLoading = false;
@@ -106,8 +196,16 @@ export default {
     addPoint() {
       plugin.addPoint(50, 50, 2);
     },
-    addRect() {
-      plugin.addRect();
+    // addRect() {
+    //   this.eventCursor = 1;
+    //   plugin.setCursor(this.eventCursor);
+    // },
+    eventCursorClick(i) {
+      this.eventCursor = i;
+      plugin.setCursor(this.eventCursor);
+      if (i === 3) {
+        plugin.test();
+      }
     },
   },
 };
@@ -116,8 +214,6 @@ export default {
 .work-div {
   width: 100vw;
   height: 100vh;
-  min-width: 1440px;
-  min-height: 900px;
   background-color: #151617;
   overflow: hidden;
   display: flex;
@@ -145,6 +241,9 @@ export default {
   box-shadow: 0px 2px 1px 0px #212128;
   border-radius: 4px;
   margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 .left-div-1 {
   height: 100px;
@@ -153,6 +252,7 @@ export default {
 .left-div-2 {
   height: 375px;
   margin-top: 20px;
+  padding-bottom: 10px;
 }
 .content-bar {
   width: 100%;
@@ -169,7 +269,7 @@ export default {
 .content-app {
   width: 100%;
   height: 100%;
-  border: 1px solid #ea1e63;
+  border: 1px solid #a6b9c8;
 }
 .right-top {
   width: 215px;
@@ -214,5 +314,29 @@ export default {
   color: white;
   font-size: 12px;
   line-height: 100%;
+}
+.left-bar-but {
+  width: 33px;
+  height: 33px;
+  margin: 8px 8px 0 8px;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.left-bar-but:hover {
+  cursor: pointer;
+  background: #fc4c02;
+}
+.left-bar-but-img {
+  width: 19px;
+  height: 19px;
+}
+.bar-but-on {
+  background: #ddda27;
+  background: #3dcc2a;
+  background: #ddda27;
+
+  background: #fc4c02;
 }
 </style>

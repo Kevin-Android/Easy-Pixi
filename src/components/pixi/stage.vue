@@ -2,8 +2,6 @@
   <div
     class="pixi-stage"
     ref="PixiStage"
-    @mousemove="mouseMove"
-    @mousewheel="mouseWheel"
   ></div>
 </template>
 
@@ -37,15 +35,15 @@ export default {
     setCursor(tag) {
       plugin.setCursor(tag);
     },
-    mouseMove(event) {
-      plugin.setPointer({
-        x: event.offsetX,
-        y: event.offsetY,
-      });
-    },
-    mouseWheel(event) {
-      plugin.setOnMouseWheel(event);
-    },
+    // mouseMove(event) {
+    //   plugin.setPointer({
+    //     x: event.offsetX,
+    //     y: event.offsetY,
+    //   });
+    // },
+    // mouseWheel(event) {
+    //   plugin.setOnMouseWheel(event);
+    // },
   },
 };
 </script>
